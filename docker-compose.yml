@@ -73,7 +73,7 @@ services:
     environment:
       - "VIRTUAL_HOST=lab.cyberbear.me"
     volumes:
-      - "cbl_webroot:/var/www/"
+      - "cbl_webroot:/var/www/html/"
     networks: ["web_net"]
 
 # ASZ Scholz - asz-scholz.de
@@ -89,7 +89,7 @@ services:
     environment:
       - "VIRTUAL_HOST=asz-scholz.de"
     volumes:
-      - "asz_webroot:/var/www/"
+      - "asz_webroot:/var/www/html/"
     networks: ["web_net"]
 
 
