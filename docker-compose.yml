@@ -145,6 +145,13 @@ volumes:
   prx_config: # Configuration Proxy
     name: "prx_config"
   
+  clamav_socket:
+    name: "clamav_socket:/tmp/"
+  clamav_virusdb:
+    name: "clamav_virusdb:/var/lib/clamav"
+  clamav_config:
+    name: "clamav_config:/etc/clamav"
+
   cbl_webroot: # Cyberbear Lab
     name: "cbl_webroot"
   asz_webroot: # ASZ Webroot
