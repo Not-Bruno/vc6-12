@@ -71,7 +71,7 @@ services:
         condition: "service_started"
     restart: "always"
     environment:
-      - "VIRUTAL_HOST=$VH_CYBERBEAR_LAB"
+      - "VIRTUAL_HOST=$VH_CYBERBEAR_LAB"
     volumes:
       - "cbl_webroot:/var/www/"
     networks: ["web_net"]
@@ -87,7 +87,7 @@ services:
         condition: "service_started"
     restart: "always"
     environment:
-      - "VIRUTAL_HOST=asz-scholz.de"
+      - "VIRTUAL_HOST=$VH_AUTOHAUS"
     volumes:
       - "asz_webroot:/var/www/"
     networks: ["web_net"]
