@@ -64,6 +64,11 @@ services:
   cyberbearlab:
     image: "php:8.2-apache"
     container_name: "CyberbearLab"
+    depends_on:
+      proxy:
+        condition: "service_started"
+      letsencrypt:
+        condition: "service_started"
     restart: "always"
     environment:
       - "VIRUTAL_HOST=$VH_CYBERBEAR_LAB"
@@ -75,6 +80,11 @@ services:
   aszscholz:
     image: "php:8.2-apache"
     container_name: "ASZ-Scholz"
+    depends_on:
+      proxy:
+        condition: "service_started"
+      letsencrypt:
+        condition: "service_started"
     restart: "always"
     environment:
       - "VIRUTAL_HOST=$VH_AUTOHAUS"
