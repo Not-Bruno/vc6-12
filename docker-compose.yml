@@ -146,7 +146,7 @@ volumes:
     name: "prx_config"
   
   clamav_socket:
-    name: "clamav_socket:/tmp/"
+    name: "clamav_socket:/tmp"
   clamav_virusdb:
     name: "clamav_virusdb:/var/lib/clamav"
   clamav_config:
