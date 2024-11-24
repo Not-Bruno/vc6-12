@@ -51,16 +51,7 @@ services:
 #                        __/ |
 #                       |___/ 
 
-# ClamAV
-  clamav:
-    image: "clamav/clamav:stable_base"
-    container_name: "ClamAV"
-    restart: "unless-stopped"
-    volumes:
-      - "clamav_socket:/tmp/"
-      - "clamav_virusdb:/var/lib/clamav"
-      - "clamav_config:/etc/clamav"
-    networks: ["utl_net"]
+# <-- PLACEHOLDER -->
 
 #  _    _      _                                  
 # | |  | |    | |                                 
@@ -144,13 +135,6 @@ volumes:
     name: "prx_html"
   prx_config: # Configuration Proxy
     name: "prx_config"
-  
-  clamav_socket:
-    name: "clamav_socket:/tmp"
-  clamav_virusdb:
-    name: "clamav_virusdb:/var/lib/clamav"
-  clamav_config:
-    name: "clamav_config:/etc/clamav"
 
   cbl_webroot: # Cyberbear Lab
     name: "cbl_webroot"
