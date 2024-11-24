@@ -71,12 +71,12 @@ services:
         condition: "service_started"
     restart: "always"
     environment:
-      - "VIRTUAL_HOST=$VH_CYBERBEAR_LAB"
+      - "VIRTUAL_HOST=lab.cyberbear.me"
     volumes:
       - "cbl_webroot:/var/www/"
     networks: ["web_net"]
 
-# Cyberbear Lab - lab.cyberbear.me
+# ASZ Scholz - asz-scholz.de
   aszscholz:
     image: "php:8.2-apache"
     container_name: "ASZ-Scholz"
@@ -87,7 +87,7 @@ services:
         condition: "service_started"
     restart: "always"
     environment:
-      - "VIRTUAL_HOST=$VH_AUTOHAUS"
+      - "VIRTUAL_HOST=asz-scholz.de"
     volumes:
       - "asz_webroot:/var/www/"
     networks: ["web_net"]
