@@ -87,7 +87,7 @@ services:
         condition: "service_started"
     restart: "always"
     environment:
-      - "VIRUTAL_HOST=$VH_AUTOHAUS"
+      - "VIRUTAL_HOST=asz-scholz.de"
     volumes:
       - "asz_webroot:/var/www/"
     networks: ["web_net"]
