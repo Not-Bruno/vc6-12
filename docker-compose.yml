@@ -70,8 +70,6 @@ services:
     depends_on:
       proxy:
         condition: "service_started"
-      letsencrypt:
-        condition: "service_started"
     restart: "always"
     environment:
       - "VIRTUAL_HOST=$VH_CYBERBEAR_LAB"
@@ -85,8 +83,6 @@ services:
     container_name: "ASZ-Scholz"
     depends_on:
       proxy:
-        condition: "service_started"
-      letsencrypt:
         condition: "service_started"
     restart: "always"
     environment:
