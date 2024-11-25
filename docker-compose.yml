@@ -39,7 +39,7 @@ services:
       - "prx_html:/usr/share/nginx/html"
       - "/run/docker.sock:/var/run/docker.sock:ro"
     environment:
-      - "NGINX_PROXY_CONTAINER=proxy"
+      - "NGINX_PROXY_CONTAINER=Proxy"
     networks: ["sys_net"]
 
 #  _    _ _   _ _ _ _         
