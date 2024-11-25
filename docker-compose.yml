@@ -9,40 +9,38 @@ services:
 #                       __/ |                    
 #                      |___/                     
 
+# Proxy
   proxy:
-    image: "jc21/nginx-proxy-manager:latest"
+    image: "jwilder/nginx-proxy"
     container_name: "Proxy"
-    restart: "unless-stopped"
-    depends_on:
-      proxy_db:
-        condition: "service_started"
-    environment:
-      - "DB_MYSQL_HOST=proxy_db"
-      - "DB_MYSQL_PORT=$PROXY_DB_PORT"
-      - "DB_MYSQL_USER=$PROXY_DB_USER"
-      - "DB_MYSQL_PASSWORD=$PROXY_DB_PASSWORD"
-      - "DB_MYSQL_NAME=$PROXY_DB_NAME"
-      - "DISABLE_IPV6=true"
+    restart: "always"
     volumes:
-      - prx_data:/data
-      - prx_letsencrypt:/etc/letsencrypt
-    networks: ["sys_net"]
+      - "prx_certs:/etc/nginx/certs"
+      - "prx_vhost:/etc/nginx/vhost.d"
+      - "prx_html:/usr/share/nginx/html"
+      - "prx_config:/etc/nginx/"
+      - "/run/docker.sock:/tmp/docker.sock:ro"
+    networks: ["sys_net", "web_net"]
     ports:
-      - '80:80'
-      - '443:443'
-      - '81:81'
+      - "443:443"
+      - "80:80"
 
-  proxy_db:
-    image: "jc21/mariadb-aria:latest"
-    container_name: "proxy_db"
-    restart: "unless-stopped"
-    environment:
-      - "MYSQL_ROOT_PASSWORD=$PROXY_DB_PASSWORD"
-      - "MYSQL_DATABASE=$PROXY_DB_NAME"
-      - "MYSQL_USER=$PROXY_DB_USER"
-      - "MARIADB_AUTO_UPGRADE=1"
+# Letsencrypt
+  letsencrypt:
+    image: "jrcs/letsencrypt-nginx-proxy-companion"
+    container_name: "LetsEncrypt"
+    restart: "always"
+    depends_on:
+      proxy:
+        condition: "service_started"
     volumes:
-      - prx_db_data:/var/lib/mysql
+      - "prx_certs:/etc/nginx/certs"
+      - "prx_vhost:/etc/nginx/vhost.d"
+      - "prx_html:/usr/share/nginx/html"
+      - "/run/docker.sock:/var/run/docker.sock:ro"
+    environment:
+      - "NGINX_PROXY_CONTAINER=Proxy"
+    networks: ["sys_net"]
 
 #  _    _ _   _ _ _ _         
 # | |  | | | (_) (_) |        
@@ -69,9 +67,12 @@ services:
     depends_on:
       proxy:
         condition: "service_started"
+      letsencrypt:
+        condition: "service_started"
     restart: "always"
     environment:
       - "VIRTUAL_HOST=$VH_CYBERBEAR_LAB"
+      - "LETSENCRYPT_HOST=$VH_CYBERBEAR_LAB"
     volumes:
       - "cbl_webroot:/var/www/html/"
     networks: ["web_net"]
@@ -83,9 +84,12 @@ services:
     depends_on:
       proxy:
         condition: "service_started"
+      letsencrypt:
+        condition: "service_started"
     restart: "always"
     environment:
-      - "VIRTUAL_HOST=VH_AUTOHAUS"
+      - "VIRTUAL_HOST=$VH_AUTOHAUS"
+      - "LETSENCRYPT_HOST=$VH_AUTOHAUS"
     volumes:
       - "asz_webroot:/var/www/html/"
     networks: ["web_net"]
@@ -135,12 +139,14 @@ networks: # 172.21.0.0/16
 #     \/ \___/|_|\__,_|_| |_| |_|\___||___/
 
 volumes:
-  prx_data:
-    name: "prx_data"
-  prx_letsencrypt:
-    name: "prx_letsencrypt"
-  prx_db_data:
-    name: "prx_db_data"
+  prx_certs: # CERTIFIKATE Proxy / Letsencrypt
+    name: "prx_certs"
+  prx_vhost: # VHOST Proxy / Letsencrypt
+    name: "prx_vhost"
+  prx_html: # HTML Proxy / Letsencrypt
+    name: "prx_html"
+  prx_config: # Configuration Proxy
+    name: "prx_config"
 
   cbl_webroot: # Cyberbear Lab
     name: "cbl_webroot"
