@@ -9,38 +9,41 @@ services:
 #                       __/ |                    
 #                      |___/                     
 
-# Proxy
   proxy:
-    image: "jwilder/nginx-proxy"
+    image: "jc21/nginx-proxy-manager:latest"
     container_name: "Proxy"
-    restart: "always"
-    volumes:
-      - "prx_certs:/etc/nginx/certs"
-      - "prx_vhost:/etc/nginx/vhost.d"
-      - "prx_html:/usr/share/nginx/html"
-      - "prx_config:/etc/nginx/"
-      - "/run/docker.sock:/tmp/docker.sock:ro"
-    networks: ["sys_net", "web_net"]
-    ports:
-      - "443:443"
-      - "80:80"
-
-# Letsencrypt
-  letsencrypt:
-    image: "jrcs/letsencrypt-nginx-proxy-companion"
-    container_name: "LetsEncrypt"
-    restart: "always"
+    restart: "unless-stopped"
     depends_on:
-      proxy:
+      proxy_db:
         condition: "service_started"
-    volumes:
-      - "prx_certs:/etc/nginx/certs"
-      - "prx_vhost:/etc/nginx/vhost.d"
-      - "prx_html:/usr/share/nginx/html"
-      - "/run/docker.sock:/var/run/docker.sock:ro"
     environment:
-      - "NGINX_PROXY_CONTAINER=Proxy"
+      DB_MYSQL_HOST: "proxy_db"
+      DB_MYSQL_PORT: 3306
+      DB_MYSQL_USER: $PROXY_DB_USER
+      DB_MYSQL_PASSWORD: $PROXY_DB_PASSWORD
+      DB_MYSQL_NAME: $PROXY_DB_NAME
+      DISABLE_IPV6: 'true'
+    volumes:
+      - prx_data:/data
+      - prx_letsencrypt:/etc/letsencrypt
     networks: ["sys_net"]
+    ports:
+      - '80:80'
+      - '443:443'
+      - '81:81'
+
+  proxy_db:
+    image: 'jc21/mariadb-aria:latest'
+    container_name: "proxy_db"
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: 'npm'
+      MYSQL_DATABASE: 'npm'
+      MYSQL_USER: 'npm'
+      MYSQL_PASSWORD: 'npm'
+      MARIADB_AUTO_UPGRADE: '1'
+    volumes:
+      - ./mysql:/var/lib/mysql
 
 #  _    _ _   _ _ _ _         
 # | |  | | | (_) (_) |        
@@ -71,7 +74,7 @@ services:
         condition: "service_started"
     restart: "always"
     environment:
-      - "VIRTUAL_HOST=lab.cyberbear.me"
+      - "VIRTUAL_HOST=$VH_CYBERBEAR_LAB"
     volumes:
       - "cbl_webroot:/var/www/html/"
     networks: ["web_net"]
@@ -87,7 +90,7 @@ services:
         condition: "service_started"
     restart: "always"
     environment:
-      - "VIRTUAL_HOST=asz-scholz.de"
+      - "VIRTUAL_HOST=VH_AUTOHAUS"
     volumes:
       - "asz_webroot:/var/www/html/"
     networks: ["web_net"]
@@ -137,14 +140,10 @@ networks: # 172.21.0.0/16
 #     \/ \___/|_|\__,_|_| |_| |_|\___||___/
 
 volumes:
-  prx_certs: # CERTIFIKATE Proxy / Letsencrypt
-    name: "prx_certs"
-  prx_vhost: # VHOST Proxy / Letsencrypt
-    name: "prx_vhost"
-  prx_html: # HTML Proxy / Letsencrypt
-    name: "prx_html"
-  prx_config: # Configuration Proxy
-    name: "prx_config"
+  prx_data:
+    name: "prx_data"
+  prx_letsencrypt:
+    name: "prx_letsencrypt"
 
   cbl_webroot: # Cyberbear Lab
     name: "cbl_webroot"
