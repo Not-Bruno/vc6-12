@@ -73,6 +73,8 @@ services:
     environment:
       - "VIRTUAL_HOST=$VH_CYBERBEAR_LAB"
       - "LETSENCRYPT_HOST=$VH_CYBERBEAR_LAB"
+      - "VIRTUAL_HOST=$VH_CYBERBEAR"
+      - "LETSENCRYPT_HOST=$VH_CYBERBEAR"
     volumes:
       - "cbl_webroot:/var/www/html/"
     networks: ["web_net"]
