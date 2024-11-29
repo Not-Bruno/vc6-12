@@ -79,6 +79,23 @@ services:
       - "cbl_webroot:/var/www/html/"
     networks: ["web_net"]
 
+# Cyberbear Lab - lab.cyberbear.me
+  releas-hub:
+    image: "php:8.2-apache"
+    container_name: "Releas-Hub"
+    depends_on:
+      proxy:
+        condition: "service_started"
+      letsencrypt:
+        condition: "service_started"
+    restart: "always"
+    environment:
+      - "VIRTUAL_HOST=$VH_RELEASES"
+      - "LETSENCRYPT_HOST=$VH_RELEASES"
+    volumes:
+      - "releases_data:/var/www/html/"
+    networks: ["rls_net"]
+
 # ASZ Scholz - asz-scholz.de
   aszscholz:
     image: "php:8.2-apache"
@@ -132,6 +149,15 @@ networks: # 172.21.0.0/16
         - subnet: "172.21.3.0/24"
           ip_range: "172.21.3.0/24"
           gateway: "172.21.3.1"
+# Net for Releases
+  rls_net: # 172.21.4.0/24
+    name: "rls_net"
+    driver: "bridge"
+    ipam:
+      config:
+        - subnet: "172.21.4.0/24"
+          ip_range: "172.21.4.0/24"
+          gateway: "172.21.4.1"
   
 # __      __   _                           
 # \ \    / /  | |                          
@@ -154,5 +180,7 @@ volumes:
     name: "cbl_webroot"
   asz_webroot: # ASZ Webroot
     name: "asz_webroot"
+  releases_data: # Releases Data
+    name: "releases_data"
 
 # CREATED BY Bruno
