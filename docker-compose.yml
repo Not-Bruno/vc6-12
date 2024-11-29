@@ -20,7 +20,7 @@ services:
       - "prx_html:/usr/share/nginx/html"
       - "prx_config:/etc/nginx/"
       - "/run/docker.sock:/tmp/docker.sock:ro"
-    networks: ["sys_net", "web_net"]
+    networks: ["sys_net", "web_net", "rls_net"]
     ports:
       - "443:443"
       - "80:80"
