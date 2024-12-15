@@ -16,4 +16,4 @@ CMD git submodule add -f https://github.com/panr/hugo-theme-terminal.git themes/
 COPY ./vault/sample_hugo.toml ./hugo.toml
 COPY ./vault/docs/*  ./content/
 
-CMD hugo server -t terminal
+CMD hugo server -t terminal -p 1313
