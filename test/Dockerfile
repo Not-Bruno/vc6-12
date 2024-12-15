@@ -14,6 +14,6 @@ WORKDIR documentations
 CMD git submodule add -f https://github.com/panr/hugo-theme-terminal.git themes/terminal
 
 COPY ./vault/sample_hugo.toml ./hugo.toml
-COPY ./vault/docs/*  ./content
+COPY ./vault/docs/*  ./content/
 
 CMD hugo server -t terminal
