@@ -1,19 +1,18 @@
-FROM ubuntu
+FROM php:8.2-apache
 
-CMD apt update \
-    apt install -y hugo git
+ENV PORT=80
 
-CMD mkdir /var/www/html/
+RUN apt update && apt install -y git golang-go hugo
 
 WORKDIR /var/www/html/
 
-CMD hugo new site documentations
+RUN hugo new site documentations
 
 WORKDIR documentations
 
-CMD git submodule add -f https://github.com/panr/hugo-theme-terminal.git themes/terminal
+RUN git clone https://github.com/panr/hugo-theme-terminal.git themes/terminal
 
 COPY ./vault/sample_hugo.toml ./hugo.toml
 COPY ./vault/docs/*  ./content/
 
-CMD hugo server -t terminal -p 1313
+CMD ["sh", "-c", "hugo server -p $PORT -t terminal"]

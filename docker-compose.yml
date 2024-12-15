@@ -20,7 +20,7 @@ services:
       - "prx_html:/usr/share/nginx/html"
       - "prx_config:/etc/nginx/"
       - "/run/docker.sock:/tmp/docker.sock:ro"
-    networks: ["sys_net", "web_net", "rls_net"]
+    networks: ["sys_net", "web_net"]
     ports:
       - "443:443"
       - "80:80"
@@ -60,58 +60,6 @@ services:
 # \  /\  /  __/ |_) \__ \  __/ |   \ V /  __/ |   
 #  \/  \/ \___|_.__/|___/\___|_|    \_/ \___|_|   
 
-# Cyberbear Lab - lab.cyberbear.me
-  cyberbearlab:
-    image: "php:8.2-apache"
-    container_name: "CyberbearLab"
-    depends_on:
-      proxy:
-        condition: "service_started"
-      letsencrypt:
-        condition: "service_started"
-    restart: "always"
-    environment:
-      - "VIRTUAL_HOST=$VH_CYBERBEAR_LAB"
-      - "LETSENCRYPT_HOST=$VH_CYBERBEAR_LAB"
-    volumes:
-      - "cbl_webroot:/var/www/html/"
-    networks: ["web_net"]
-
-# Webdocs - lab.cyberbear.me
-  webdocs:
-    image: "webdocs:0.1.1"
-    container_name: "Webdocs"
-    depends_on:
-      proxy:
-        condition: "service_started"
-      letsencrypt:
-        condition: "service_started"
-    restart: "always"
-    environment:
-      - "VIRTUAL_HOST=$VH_CYBERBEAR_LAB"
-      - "VIRTUAL_PORT=1313"
-      - "LETSENCRYPT_HOST=$VH_CYBERBEAR_LAB"
-    volumes:
-      - "webroot_webdocs:/var/www/html/"
-    networks: ["web_net"]
-
-# Cyberbear Lab - release.cyberbear.me
-  releas-hub:
-    image: "php:8.2-apache"
-    container_name: "Releas-Hub"
-    depends_on:
-      proxy:
-        condition: "service_started"
-      letsencrypt:
-        condition: "service_started"
-    restart: "always"
-    environment:
-      - "VIRTUAL_HOST=$VH_RELEASES"
-      - "LETSENCRYPT_HOST=$VH_RELEASES"
-    volumes:
-      - "releases_data:/var/www/html/"
-    networks: ["rls_net"]
-
 # ASZ Scholz - asz-scholz.de
   aszscholz:
     image: "php:8.2-apache"
@@ -129,6 +77,29 @@ services:
       - "asz_webroot:/var/www/html/"
     networks: ["web_net"]
 
+# _____         _       
+#|_   _|       | |      
+#  | | ___  ___| |_ ___ 
+#  | |/ _ \/ __| __/ __|
+#  | |  __/\__ \ |_\__ \
+#  \_/\___||___/\__|___/                     
+
+# Webdocs - lab.cyberbear.me
+  webdocs:
+    image: "webdocs:0.1.7"
+    container_name: "Webdocs"
+    depends_on:
+      proxy:
+        condition: "service_started"
+      letsencrypt:
+        condition: "service_started"
+    restart: "always"
+    environment:
+      - "VIRTUAL_HOST=$VH_CYBERBEAR_LAB"
+      - "LETSENCRYPT_HOST=$VH_CYBERBEAR_LAB"
+    volumes:
+      - "webroot_webdocs:/var/www/html/"
+    networks: ["web_net"]
 
 #  _   _      _                      _        
 # | \ | |    | |                    | |       
@@ -165,15 +136,6 @@ networks: # 172.21.0.0/16
         - subnet: "172.21.3.0/24"
           ip_range: "172.21.3.0/24"
           gateway: "172.21.3.1"
-# Net for Releases
-  rls_net: # 172.21.4.0/24
-    name: "rls_net"
-    driver: "bridge"
-    ipam:
-      config:
-        - subnet: "172.21.4.0/24"
-          ip_range: "172.21.4.0/24"
-          gateway: "172.21.4.1"
   
 # __      __   _                           
 # \ \    / /  | |                          
@@ -192,12 +154,8 @@ volumes:
   prx_config: # Configuration Proxy
     name: "prx_config"
 
-  cbl_webroot: # Cyberbear Lab
-    name: "cbl_webroot"
   asz_webroot: # ASZ Webroot
     name: "asz_webroot"
-  releases_data: # Releases Data
-    name: "releases_data"
   webroot_webdocs: # Webdocs Webroot
     name: "webroot_webdocs"
 

@@ -1,0 +1,48 @@
+# Cyberbear Lab - lab.cyberbear.me
+  cyberbearlab:
+    image: "php:8.2-apache"
+    container_name: "CyberbearLab"
+    depends_on:
+      proxy:
+        condition: "service_started"
+      letsencrypt:
+        condition: "service_started"
+    restart: "always"
+    environment:
+      - "VIRTUAL_HOST=$VH_CYBERBEAR_LAB"
+      - "LETSENCRYPT_HOST=$VH_CYBERBEAR_LAB"
+    volumes:
+      - "cbl_webroot:/var/www/html/"
+    networks: ["web_net"]
+
+# Cyberbear Lab - release.cyberbear.me
+  releas-hub:
+    image: "php:8.2-apache"
+    container_name: "Releas-Hub"
+    depends_on:
+      proxy:
+        condition: "service_started"
+      letsencrypt:
+        condition: "service_started"
+    restart: "always"
+    environment:
+      - "VIRTUAL_HOST=$VH_RELEASES"
+      - "LETSENCRYPT_HOST=$VH_RELEASES"
+    volumes:
+      - "releases_data:/var/www/html/"
+    networks: ["rls_net"]
+
+# Net for Releases
+  rls_net: # 172.21.4.0/24
+    name: "rls_net"
+    driver: "bridge"
+    ipam:
+      config:
+        - subnet: "172.21.4.0/24"
+          ip_range: "172.21.4.0/24"
+          gateway: "172.21.4.1"
+
+  releases_data: # Releases Data
+    name: "releases_data"
+  cbl_webroot: # Cyberbear Lab
+    name: "cbl_webroot"
