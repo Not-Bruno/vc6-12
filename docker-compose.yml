@@ -80,7 +80,7 @@ services:
 # Webdocs - lab.cyberbear.me
   webdocs:
     image: "webdocs:0.1.1"
-    container_name: "Releas-Hub"
+    container_name: "Webdocs"
     depends_on:
       proxy:
         condition: "service_started"
