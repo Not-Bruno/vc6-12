@@ -73,13 +73,28 @@ services:
     environment:
       - "VIRTUAL_HOST=$VH_CYBERBEAR_LAB"
       - "LETSENCRYPT_HOST=$VH_CYBERBEAR_LAB"
-      - "VIRTUAL_HOST=$VH_CYBERBEAR"
-      - "LETSENCRYPT_HOST=$VH_CYBERBEAR"
     volumes:
       - "cbl_webroot:/var/www/html/"
     networks: ["web_net"]
 
-# Cyberbear Lab - lab.cyberbear.me
+# Webdocs - lab.cyberbear.me
+  webdocs:
+    image: "webdocs:0.1.1"
+    container_name: "Releas-Hub"
+    depends_on:
+      proxy:
+        condition: "service_started"
+      letsencrypt:
+        condition: "service_started"
+    restart: "always"
+    environment:
+      - "VIRTUAL_HOST=$VH_CYBERBEAR_LAB"
+      - "LETSENCRYPT_HOST=$VH_CYBERBEAR_LAB"
+    volumes:
+      - "webroot_webdocs:/var/www/html/"
+    networks: ["web_net"]
+
+# Cyberbear Lab - release.cyberbear.me
   releas-hub:
     image: "php:8.2-apache"
     container_name: "Releas-Hub"
