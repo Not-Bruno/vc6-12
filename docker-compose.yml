@@ -197,5 +197,7 @@ volumes:
     name: "asz_webroot"
   releases_data: # Releases Data
     name: "releases_data"
+  webroot_webdocs: # Webdocs Webroot
+    name: "webroot_webdocs"
 
 # CREATED BY Bruno
