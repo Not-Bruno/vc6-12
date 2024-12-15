@@ -89,6 +89,7 @@ services:
     restart: "always"
     environment:
       - "VIRTUAL_HOST=$VH_CYBERBEAR_LAB"
+      - "VIRTUAL_PORT=1313"
       - "LETSENCRYPT_HOST=$VH_CYBERBEAR_LAB"
     volumes:
       - "webroot_webdocs:/var/www/html/"
