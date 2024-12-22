@@ -51,6 +51,16 @@ services:
 #                        __/ |
 #                       |___/ 
 
+# Cowire (Honeypot)
+  cowire:
+    image: "cowrie/cowrie:latest"
+    container_name: "Honeypot"
+    networks: ["isolate_net"]
+    environment:
+      - "COWRIE_TELNET_ENABLED=yes"
+    ports:
+      - "22:2222/tcp" # Fake SSH Ports
+
   webtop:
     image: "lscr.io/linuxserver/webtop:arch-xfce"
     container_name: "Arch"
@@ -91,6 +101,15 @@ services:
 # |_| \_|\___|\__| \_/\_/ \___/|_|  |_|\_\___/
 
 networks: # 172.21.0.0/16
+# Isoliertes Netz für Honeypot
+  isolate_net: # 128.0.0.1/29 > 128.0.0.1 bis 128.0.0.6
+    name: "isolate_net"
+    driver: "bridge"
+    ipam:
+      config:
+        - subnet: "128.0.0.1/29"
+          ip_range: "128.0.0.1/29"
+          gateway: "128.0.0.1"
 # System
   sys_net: # 172.21.1.0/24
     name: "sys_net"
