@@ -59,7 +59,7 @@ services:
     environment:
       - "COWRIE_TELNET_ENABLED=yes"
     ports:
-      - "22:2222/tcp" # Fake SSH Ports
+      - "2222:2222/tcp" # Fake SSH Ports
 
   webtop:
     image: "lscr.io/linuxserver/webtop:arch-xfce"
