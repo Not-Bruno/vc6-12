@@ -101,15 +101,6 @@ services:
 # |_| \_|\___|\__| \_/\_/ \___/|_|  |_|\_\___/
 
 networks: # 172.21.0.0/16
-# Isoliertes Netz für Honeypot
-  isolate_net: # 128.0.0.1/29 > 128.0.0.1 bis 128.0.0.6
-    name: "isolate_net"
-    driver: "bridge"
-    ipam:
-      config:
-        - subnet: "128.0.0.0/29"
-          ip_range: "128.0.0.0/29"
-          gateway: "128.0.0.1"
 # System
   sys_net: # 172.21.1.0/24
     name: "sys_net"
