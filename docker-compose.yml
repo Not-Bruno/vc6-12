@@ -71,9 +71,9 @@ services:
     image: dockurr/windows
     container_name: "Windows"
     environment:
-      #- "VIRTUAL_HOST=$VH_MALLAB"
-      #- "VIRTUAL_PORT=$VP_MALLAB"
-      #- "LETSENCRYPT_HOST=$VH_MALLAB"
+      - "VIRTUAL_HOST=$VH_MALLAB"
+      - "VIRTUAL_PORT=$VP_MALLAB"
+      - "LETSENCRYPT_HOST=$VH_MALLAB"
       # Windows Konfiguration
       - "VERSION=11"
       - "DISK_SIZE=80G"
@@ -89,10 +89,10 @@ services:
       - "/dev/net/tun"
     cap_add:
       - "NET_ADMIN"
-    ports:
-      # 8006:8006 for Web interface - Declared in .env
-      - "3389:3389/tcp"
-      - "3389:3389/udp"
+    #ports:
+      #- "8006:8006" for Web interface
+      #- "3389:3389/tcp" for RDP
+      #- "3389:3389/udp"
     stop_grace_period: 2m
     networks: ["mlw_net"]
 
