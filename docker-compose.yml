@@ -20,7 +20,7 @@ services:
       - "prx_html:/usr/share/nginx/html"
       - "prx_config:/etc/nginx/"
       - "/run/docker.sock:/tmp/docker.sock:ro"
-    networks: ["sys_net", "web_net"]
+    networks: ["sys_net", "web_net", "mlw_net"]
     ports:
       - "443:443"
       - "80:80"
@@ -41,33 +41,6 @@ services:
     environment:
       - "NGINX_PROXY_CONTAINER=Proxy"
     networks: ["sys_net"]
-
-#  _    _ _   _ _ _ _         
-# | |  | | | (_) (_) |        
-# | |  | | |_ _| |_| |_ _   _ 
-# | |  | | __| | | | __| | | |
-# | |__| | |_| | | | |_| |_| |
-#  \____/ \__|_|_|_|\__|\__, |
-#                        __/ |
-#                       |___/ 
-
-# Cowire (Honeypot)
-  cowire:
-    image: "cowrie/cowrie:latest"
-    container_name: "Honeypot"
-    networks: ["isolate_net"]
-    environment:
-      - "COWRIE_TELNET_ENABLED=yes"
-    ports:
-      - "2222:2222/tcp" # Fake SSH Ports
-
-  webtop:
-    image: "lscr.io/linuxserver/webtop:arch-xfce"
-    container_name: "Arch"
-    environment:
-      - "VIRTUAL_HOST=$VH_CYBERBEAR"
-      - "LETSENCRYPT_HOST=$VH_CYBERBEAR"
-    networks: ["utl_net"]
 
 #  _    _      _                                  
 # | |  | |    | |                                 
@@ -92,6 +65,36 @@ services:
     volumes:
       - "asz_webroot:/var/www/html/"
     networks: ["web_net"]
+
+# Malware Lab
+  windows:
+    image: dockurr/windows
+    container_name: "Windows"
+    environment:
+      - "VIRTUAL_HOST=$VH_MALLAB"
+      - "VIRTUAL_PORT=$VP_MALLAB"
+      - "LETSENCRYPT_HOST=$VH_MALLAB"
+      # Windows Konfiguration
+      - "VERSION=11"
+      - "DISK_SIZE=80G"
+      - "USERNAME=$WIN_USERNAME"
+      - "PASSWORD=$WIN_USERPASSWORD"
+      - "LANGUAGE=German"
+      - "REGION=de-DE"
+      - "KEYBOARD=de-DE"
+    volumes:
+      - "windows_storage:/storage"
+    devices:
+      - "/dev/kvm"
+      - "/dev/net/tun"
+    cap_add:
+      - "NET_ADMIN"
+    ports:
+      # 8006:8006 for Web interface - Declared in .env
+      - "3389:3389/tcp"
+      - "3389:3389/udp"
+    stop_grace_period: 2m
+    networks: ["mlw_net"]
 
 #  _   _      _                      _        
 # | \ | |    | |                    | |       
@@ -128,6 +131,15 @@ networks: # 172.21.0.0/16
         - subnet: "172.21.3.0/24"
           ip_range: "172.21.3.0/24"
           gateway: "172.21.3.1"
+# Mallab Net
+  mlw_net: # 172.21.4.0/24
+    name: "mlw_net"
+    driver: "bridge"
+    ipam:
+      config:
+        - subnet: "172.21.4.0/24"
+          ip_range: "172.21.4.0/24"
+          gateway: "172.21.4.1"
   
 # __      __   _                           
 # \ \    / /  | |                          
@@ -145,6 +157,9 @@ volumes:
     name: "prx_html"
   prx_config: # Configuration Proxy
     name: "prx_config"
+
+  windows_storage: # Windows Storage
+    name: "windows_storage"
 
   asz_webroot: # ASZ Webroot
     name: "asz_webroot"
