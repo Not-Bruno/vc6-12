@@ -71,9 +71,9 @@ services:
     image: dockurr/windows
     container_name: "Windows"
     environment:
-      - "VIRTUAL_HOST=$VH_MALLAB"
-      - "VIRTUAL_PORT=$VP_MALLAB"
-      - "LETSENCRYPT_HOST=$VH_MALLAB"
+      #- "VIRTUAL_HOST=$VH_MALLAB"
+      #- "VIRTUAL_PORT=$VP_MALLAB"
+      #- "LETSENCRYPT_HOST=$VH_MALLAB"
       # Windows Konfiguration
       - "VERSION=11"
       - "DISK_SIZE=80G"
@@ -113,15 +113,6 @@ networks: # 172.21.0.0/16
         - subnet: "172.21.1.0/24"
           ip_range: "172.21.1.0/24"
           gateway: "172.21.1.1"
-# Utility Net
-  utl_net: # 172.21.2.0/24
-    name: "utl_net"
-    driver: "bridge"
-    ipam:
-      config:
-        - subnet: "172.21.2.0/24"
-          ip_range: "172.21.2.0/24"
-          gateway: "172.21.2.1"
 # Webserver Net
   web_net: # 172.21.3.0/24
     name: "web_net"
