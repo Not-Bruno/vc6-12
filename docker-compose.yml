@@ -88,9 +88,10 @@ services:
       - "REGION=de-DE"
       - "KEYBOARD=de-DE"
     volumes:
-      - "flarevm_data:/storage:ro" # Volume auf Read-Only gesetzt
+      - "/srv/flarevm_data:/storage" # Volume auf sicheren Speicherort auf dem Server abgelegt
     devices:
       - "/dev/kvm" # Entfernen, falls Hardware-Virtualisierung nicht benötigt wird
+      - "/dev/net/tun"  # Zugriff auf TUN-Gerät für VPN oder andere Netzwerkoperationen
     cap_add: [] # Entfernt NET_ADMIN, um Netzwerkkontrolle einzuschränken
     ports:
       - "$FVM_RDP_PORT:3389" # RDP-Port für externe Verbindungen geöffnet
@@ -107,7 +108,7 @@ services:
     container_name: "Remnux"
     restart: always
     ports:
-      - "$RMN_SSH_PORT:22" # SSH-Port nur lokal zugänglich
+      - "21546:22" # Portweiterleitung für SSH von außen
     networks:
       laboratory:
         ipv4_address: "128.0.0.3" # Statische IP innerhalb des Malware-Lab-Netzwerks
@@ -146,7 +147,7 @@ networks: # 172.21.0.0/16
   laboratory:
     driver: macvlan
     driver_opts:
-      parent: eth0 # Netzwerkschnittstelle des Hosts
+      parent: ens0 # Netzwerkschnittstelle des Hosts
     ipam:
       config:
         - subnet: "128.0.0.0/28"
