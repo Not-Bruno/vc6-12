@@ -100,7 +100,8 @@ services:
       - "$FVM_RDP_PORT:3389/tcp" # for RDP
       #- "3389:3389/udp" # IDK for what this Port is
     stop_grace_period: 2m
-    networks: ["laboratory"]
+    network_mode: host
+    #networks: ["laboratory"]
 
 # Remnux - Malware Lab
   remnux:
@@ -109,7 +110,8 @@ services:
     restart: "always"
     ports:
       - "$RMN_SSH_PORT:22"
-    networks: ["laboratory"]
+    network_mode: host
+    #networks: ["laboratory"]
 
 #  _   _      _                      _        
 # | \ | |    | |                    | |       
