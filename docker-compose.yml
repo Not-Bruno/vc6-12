@@ -75,12 +75,11 @@ services:
 #          __/ |                  
 #         |___/                   
 
-# FlareVM - Malware Lab
+  # FlareVM - Malware Lab
   flarevm:
     image: dockurr/windows
     container_name: "FlareVM"
     environment:
-      # Windows Konfiguration
       - "VERSION=11"
       - "DISK_SIZE=80G"
       - "USERNAME=$FVM_USERNAME"
@@ -89,27 +88,29 @@ services:
       - "REGION=de-DE"
       - "KEYBOARD=de-DE"
     volumes:
-      - "flarevm_data:/storage"
+      - "flarevm_data:/storage:ro" # Volume auf Read-Only gesetzt
     devices:
-      - "/dev/kvm"
-      - "/dev/net/tun"
-    cap_add:
-      - "NET_ADMIN"
+      - "/dev/kvm" # Entfernen, falls Hardware-Virtualisierung nicht benötigt wird
+    cap_add: [] # Entfernt NET_ADMIN, um Netzwerkkontrolle einzuschränken
     ports:
-      #- "8006:8006" for Web interface
-      - "$FVM_RDP_PORT:3389/tcp" # for RDP
-      #- "3389:3389/udp" # IDK for what this Port is
+      - "$FVM_RDP_PORT:3389" # RDP-Port für externe Verbindungen geöffnet
+    security_opt:
+      - no-new-privileges:true # Verhindert Privilegien-Eskalation
     stop_grace_period: 2m
-    networks: ["laboratory"]
+    networks:
+      laboratory:
+        ipv4_address: "128.0.0.2" # Statische IP innerhalb des Malware-Lab-Netzwerks
 
-# Remnux - Malware Lab
+  # Remnux - Malware Lab
   remnux:
     image: "remnux/remnux-distro:focal"
     container_name: "Remnux"
-    restart: "always"
+    restart: always
     ports:
-      - "$RMN_SSH_PORT:22"
-    networks: ["laboratory"]
+      - "$RMN_SSH_PORT:22" # SSH-Port nur lokal zugänglich
+    networks:
+      laboratory:
+        ipv4_address: "128.0.0.3" # Statische IP innerhalb des Malware-Lab-Netzwerks
 
 #  _   _      _                      _        
 # | \ | |    | |                    | |       
@@ -143,12 +144,12 @@ networks: # 172.21.0.0/16
  # 128.0.0.0/28
  # 255.255.255.240 --> 128.0.0.1 to 128.0.0.14
   laboratory:
-    name: "laboratory"
-    driver: "brdigde"
+    driver: macvlan
+    driver_opts:
+      parent: eth0 # Netzwerkschnittstelle des Hosts
     ipam:
       config:
         - subnet: "128.0.0.0/28"
-          ip_range: "128.0.0.0/28"
           gateway: "128.0.0.1"
   
 # __      __   _                           
