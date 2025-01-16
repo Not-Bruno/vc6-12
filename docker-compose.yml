@@ -20,7 +20,7 @@ services:
       - "prx_html:/usr/share/nginx/html"
       - "prx_config:/etc/nginx/"
       - "/run/docker.sock:/tmp/docker.sock:ro"
-    networks: ["sys_net", "web_net", "mlw_net"]
+    networks: ["sys_net", "web_net"]
     ports:
       - "443:443"
       - "80:80"
@@ -66,21 +66,30 @@ services:
       - "asz_webroot:/var/www/html/"
     networks: ["web_net"]
 
-# Malware Lab
-  windows:
+# ___  ___      _           _     
+# |  \/  |     | |         | |    
+# | .  . |_   _| |     __ _| |__  
+# | |\/| | | | | |    / _` | '_ \ 
+# | |  | | |_| | |___| (_| | |_) |
+# \_|  |_/\__, \_____/\__,_|_.__/ 
+#          __/ |                  
+#         |___/                   
+
+# FlareVM - Malware Lab
+  flarevm:
     image: dockurr/windows
-    container_name: "Windows"
+    container_name: "FlareVM"
     environment:
       # Windows Konfiguration
       - "VERSION=11"
       - "DISK_SIZE=80G"
-      - "USERNAME=$WIN_USERNAME"
-      - "PASSWORD=$WIN_USERPASSWORD"
+      - "USERNAME=$FVM_USERNAME"
+      - "PASSWORD=$FVM_USERPASSWORD"
       - "LANGUAGE=German"
       - "REGION=de-DE"
       - "KEYBOARD=de-DE"
     volumes:
-      - "windows_storage:/storage"
+      - "flarevm_data:/storage"
     devices:
       - "/dev/kvm"
       - "/dev/net/tun"
@@ -88,10 +97,19 @@ services:
       - "NET_ADMIN"
     ports:
       #- "8006:8006" for Web interface
-      - "3389:3389/tcp" # for RDP
-      #- "3389:3389/udp"
+      - "$FVM_RDP_PORT:3389/tcp" # for RDP
+      #- "3389:3389/udp" # IDK for what this Port is
     stop_grace_period: 2m
-    networks: ["mlw_net"]
+    networks: ["laboratory"]
+
+# Remnux - Malware Lab
+  remnux:
+    image: "remnux/remnux-distro:focal"
+    container_name: "Remnux"
+    restart: "always"
+    ports:
+      - "$RMN_SSH_PORT:22"
+    networks: ["laboratory"]
 
 #  _   _      _                      _        
 # | \ | |    | |                    | |       
@@ -119,15 +137,19 @@ networks: # 172.21.0.0/16
         - subnet: "172.21.3.0/24"
           ip_range: "172.21.3.0/24"
           gateway: "172.21.3.1"
+
 # Mallab Net
-  mlw_net: # 172.21.4.0/24
-    name: "mlw_net"
-    driver: "bridge"
+ # NETINF
+ # 128.0.0.0/28
+ # 255.255.255.240 --> 128.0.0.1 to 128.0.0.14
+  laboratory:
+    name: "laboratory"
+    driver: "host"
     ipam:
       config:
-        - subnet: "172.21.4.0/24"
-          ip_range: "172.21.4.0/24"
-          gateway: "172.21.4.1"
+        - subnet: "128.0.0.0/28"
+          ip_range: "128.0.0.0/28"
+          gateway: "128.0.0.1"
   
 # __      __   _                           
 # \ \    / /  | |                          
@@ -146,8 +168,8 @@ volumes:
   prx_config: # Configuration Proxy
     name: "prx_config"
 
-  windows_storage: # Windows Storage
-    name: "windows_storage"
+  flarevm_data: # FlareVM Data
+    name: "flarevm_data"
 
   asz_webroot: # ASZ Webroot
     name: "asz_webroot"
