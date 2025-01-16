@@ -144,7 +144,7 @@ networks: # 172.21.0.0/16
  # 255.255.255.240 --> 128.0.0.1 to 128.0.0.14
   laboratory:
     name: "laboratory"
-    driver: "host"
+    driver: "brdigde"
     ipam:
       config:
         - subnet: "128.0.0.0/28"
