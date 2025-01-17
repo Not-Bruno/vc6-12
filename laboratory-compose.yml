@@ -10,7 +10,7 @@ services:
 
   # FlareVM - Malware Analyse
   flarevm:
-    image: dockurr/windows
+    image: "dockurr/windows"
     container_name: "FlareVM"
     environment:
       - "VERSION=$FVM_VERSION"
@@ -25,15 +25,17 @@ services:
     devices:
       - "/dev/kvm" # Entfernen, falls Hardware-Virtualisierung nicht benötigt wird
       - "/dev/net/tun"  # Zugriff auf TUN-Gerät für VPN oder andere Netzwerkoperationen
-    cap_add: [] # Entfernt NET_ADMIN, um Netzwerkkontrolle einzuschränken
-    tty: true
-    stdin_open: true
+    cap_add:
+      - "NET_ADMIN" # Entfernt NET_ADMIN, um Netzwerkkontrolle einzuschränken
+    #tty: true
+    #stdin_open: true
     ports:
-      #- "8006:8006" # Wird für die ersteinrichtung ebnötigt http://<hostip>:8006
-      - "$FVM_RDP_PORT:3389" # RDP-Port für externe Verbindungen geöffnet
-    security_opt: 
-      - no-new-privileges:true # Verhindert Privilegien-Eskalation
-    stop_grace_period: 2m
+      - "8006:8006" # Wird für die ersteinrichtung ebnötigt http://<hostip>:8006
+      - "3389:3389/tcp" # RDP-Port für externe Verbindungen geöffnet (tcp)
+      - "3389:3389/udp" # Port UDP - für ?
+    #security_opt:
+    #  - no-new-privileges:true # Verhindert Privilegien-Eskalation
+    #stop_grace_period: 2m
     networks:
       laboratory:
         ipv4_address: "$FVM_IP_ADDR" # Statische IP innerhalb des Malware-Lab-Netzwerks
@@ -44,11 +46,11 @@ services:
     container_name: "Remnux"
     restart: always
     volumes:
-      - /srv/mallab/remnux_data:/home/remnux/files
+      - "/srv/mallab/remnux_data:/home/remnux/files"
     tty: true
     stdin_open: true
     ports:
-      - "$RMN_SSH_PORT:22" # Portweiterleitung für SSH von außen
+      - "21546:22" # Portweiterleitung für SSH von außen
     networks:
       laboratory:
         ipv4_address: "$RMN_IP_ADDR" # Statische IP innerhalb des Malware-Lab-Netzwerks
@@ -73,6 +75,7 @@ networks:
       config:
         - subnet: "128.0.0.0/28"
           gateway: "128.0.0.1"
+          ip_range: "128.0.0.0/28"
 
 # __      __   _                           
 # \ \    / /  | |                          
