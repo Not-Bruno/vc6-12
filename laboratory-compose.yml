@@ -31,7 +31,8 @@ services:
     ports:
       #- "8006:8006" # Wird für die ersteinrichtung ebnötigt http://<hostip>:8006
       - "$FVM_RDP_PORT:3389" # RDP-Port für externe Verbindungen geöffnet
-    security_opt: no-new-privileges:true # Verhindert Privilegien-Eskalation
+    security_opt: 
+      - no-new-privileges:true # Verhindert Privilegien-Eskalation
     stop_grace_period: 2m
     networks:
       laboratory:
