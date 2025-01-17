@@ -68,7 +68,7 @@ networks:
   laboratory:
     driver: macvlan
     driver_opts:
-      parent: ens0 # Netzwerkschnittstelle des Hosts
+      parent: ens6 # Netzwerkschnittstelle des Hosts
     ipam:
       config:
         - subnet: "128.0.0.0/28"
