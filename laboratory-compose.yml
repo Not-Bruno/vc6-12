@@ -8,7 +8,7 @@ services:
 #          __/ |                  
 #         |___/                   
 
-  # FlareVM - Malware Lab
+  # FlareVM - Malware Analyse
   flarevm:
     image: dockurr/windows
     container_name: "FlareVM"
@@ -21,11 +21,13 @@ services:
       - "REGION=$FVM_REGION"
       - "KEYBOARD=$FVM_KEYBOARD"
     volumes:
-      - "/srv/laboratory/flarevm_data:/storage" # Volume auf sicheren Speicherort auf dem Server abgelegt
+      - "/srv/mallab/flarevm_data:/storage" # Volume auf sicheren Speicherort auf dem Server abgelegt
     devices:
       - "/dev/kvm" # Entfernen, falls Hardware-Virtualisierung nicht benötigt wird
       - "/dev/net/tun"  # Zugriff auf TUN-Gerät für VPN oder andere Netzwerkoperationen
     cap_add: [] # Entfernt NET_ADMIN, um Netzwerkkontrolle einzuschränken
+    tty: true
+    stdin_open: true
     ports:
       #- "8006:8006" # Wird für die ersteinrichtung ebnötigt http://<hostip>:8006
       - "$FVM_RDP_PORT:3389" # RDP-Port für externe Verbindungen geöffnet
@@ -36,11 +38,15 @@ services:
       laboratory:
         ipv4_address: "$FVM_IP_ADDR" # Statische IP innerhalb des Malware-Lab-Netzwerks
 
-  # Remnux - Malware Lab
+  # Remnux - Networkmonitor
   remnux:
     image: "remnux/remnux-distro:focal"
     container_name: "Remnux"
     restart: always
+    volumes:
+      - /srv/mallab/remnux_data:/home/remnux/files
+    tty: true
+    stdin_open: true
     ports:
       - "$RMN_SSH_PORT:22" # Portweiterleitung für SSH von außen
     networks:
