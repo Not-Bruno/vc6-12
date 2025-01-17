@@ -66,53 +66,6 @@ services:
       - "asz_webroot:/var/www/html/"
     networks: ["web_net"]
 
-# ___  ___      _           _     
-# |  \/  |     | |         | |    
-# | .  . |_   _| |     __ _| |__  
-# | |\/| | | | | |    / _` | '_ \ 
-# | |  | | |_| | |___| (_| | |_) |
-# \_|  |_/\__, \_____/\__,_|_.__/ 
-#          __/ |                  
-#         |___/                   
-
-  # FlareVM - Malware Lab
-  flarevm:
-    image: dockurr/windows
-    container_name: "FlareVM"
-    environment:
-      - "VERSION=11"
-      - "DISK_SIZE=80G"
-      - "USERNAME=$FVM_USERNAME"
-      - "PASSWORD=$FVM_USERPASSWORD"
-      - "LANGUAGE=German"
-      - "REGION=de-DE"
-      - "KEYBOARD=de-DE"
-    volumes:
-      - "/srv/flarevm_data:/storage" # Volume auf sicheren Speicherort auf dem Server abgelegt
-    devices:
-      - "/dev/kvm" # Entfernen, falls Hardware-Virtualisierung nicht benötigt wird
-      - "/dev/net/tun"  # Zugriff auf TUN-Gerät für VPN oder andere Netzwerkoperationen
-    cap_add: [] # Entfernt NET_ADMIN, um Netzwerkkontrolle einzuschränken
-    ports:
-      - "$FVM_RDP_PORT:3389" # RDP-Port für externe Verbindungen geöffnet
-    security_opt:
-      - no-new-privileges:true # Verhindert Privilegien-Eskalation
-    stop_grace_period: 2m
-    networks:
-      laboratory:
-        ipv4_address: "128.0.0.2" # Statische IP innerhalb des Malware-Lab-Netzwerks
-
-  # Remnux - Malware Lab
-  remnux:
-    image: "remnux/remnux-distro:focal"
-    container_name: "Remnux"
-    restart: always
-    ports:
-      - "21546:22" # Portweiterleitung für SSH von außen
-    networks:
-      laboratory:
-        ipv4_address: "128.0.0.3" # Statische IP innerhalb des Malware-Lab-Netzwerks
-
 #  _   _      _                      _        
 # | \ | |    | |                    | |       
 # |  \| | ___| |___      _____  _ __| | _____ 
@@ -139,19 +92,6 @@ networks: # 172.21.0.0/16
         - subnet: "172.21.3.0/24"
           ip_range: "172.21.3.0/24"
           gateway: "172.21.3.1"
-
-# Mallab Net
- # NETINF
- # 128.0.0.0/28
- # 255.255.255.240 --> 128.0.0.1 to 128.0.0.14
-  laboratory:
-    driver: macvlan
-    driver_opts:
-      parent: ens0 # Netzwerkschnittstelle des Hosts
-    ipam:
-      config:
-        - subnet: "128.0.0.0/28"
-          gateway: "128.0.0.1"
   
 # __      __   _                           
 # \ \    / /  | |                          
@@ -159,7 +99,6 @@ networks: # 172.21.0.0/16
 #   \ \/ / _ \| | | | | '_ ` _ \ / _ \/ __|
 #    \  / (_) | | |_| | | | | | |  __/\__ \
 #     \/ \___/|_|\__,_|_| |_| |_|\___||___/
-
 volumes:
   prx_certs: # CERTIFIKATE Proxy / Letsencrypt
     name: "prx_certs"
@@ -169,9 +108,6 @@ volumes:
     name: "prx_html"
   prx_config: # Configuration Proxy
     name: "prx_config"
-
-  flarevm_data: # FlareVM Data
-    name: "flarevm_data"
 
   asz_webroot: # ASZ Webroot
     name: "asz_webroot"
