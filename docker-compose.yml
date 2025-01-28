@@ -66,6 +66,16 @@ services:
       - "asz_webroot:/var/www/html/"
     networks: ["web_net"]
 
+# Squid Proxy
+  squid:
+    build:
+      context: ./custom/squid/
+      dockerfile: Dockerfile
+    image: squid:custom
+    ports:
+      - "3128:3128"
+    networks: ["sqd_net"]
+
 #  _   _      _                      _        
 # | \ | |    | |                    | |       
 # |  \| | ___| |___      _____  _ __| | _____ 
@@ -92,6 +102,15 @@ networks: # 172.21.0.0/16
         - subnet: "172.21.3.0/24"
           ip_range: "172.21.3.0/24"
           gateway: "172.21.3.1"
+# Squid Proxy
+  sqd_net: # 172.21.4.0/24
+    name: "sqd_net"
+    driver: "bridge"
+    ipam:
+      config:
+        - subnet: "172.21.4.0/24"
+          ip_range: "172.21.4.0/24"
+          gateway: "172.21.4.1"
   
 # __      __   _                           
 # \ \    / /  | |                          
