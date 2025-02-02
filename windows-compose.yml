@@ -27,7 +27,7 @@ services:
     #security_opt:
     #  - no-new-privileges:true # Verhindert Privilegien-Eskalation
     #stop_grace_period: 2m
-    networks: ["laboratory"]
+    networks: ["win_net"]
 
 #  _   _      _                      _        
 # | \ | |    | |                    | |       
