@@ -21,7 +21,7 @@ services:
     #tty: true
     #stdin_open: true
     ports:
-      - "8006:8006" # Wird für die ersteinrichtung benötigt http://<hostip>:8006
+      #- "8006:8006" # Wird für die ersteinrichtung benötigt http://<hostip>:8006
       - "$WIN_RDP_PORT:3389/tcp" # RDP-Port für externe Verbindungen geöffnet (tcp)
       - "$WIN_RDP_PORT:3389/udp" # Port UDP - für ?
     #security_opt:
