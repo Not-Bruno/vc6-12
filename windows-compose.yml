@@ -1,13 +1,4 @@
 services:
-# ___  ___      _           _     
-# |  \/  |     | |         | |    
-# | .  . |_   _| |     __ _| |__  
-# | |\/| | | | | |    / _` | '_ \ 
-# | |  | | |_| | |___| (_| | |_) |
-# \_|  |_/\__, \_____/\__,_|_.__/ 
-#          __/ |                  
-#         |___/                   
-
   # Windows for Reversing
   winville:
     image: "dockurr/windows"
@@ -26,11 +17,11 @@ services:
       - "/dev/kvm" # Entfernen, falls Hardware-Virtualisierung nicht benötigt wird
       - "/dev/net/tun"  # Zugriff auf TUN-Gerät für VPN oder andere Netzwerkoperationen
     cap_add:
-      - "NET_ADMIN" # Entfernt NET_ADMIN, um Netzwerkkontrolle einzuschränken
+      - "NET_ADMIN" # Entferne NET_ADMIN, um Netzwerkkontrolle einzuschränken
     #tty: true
     #stdin_open: true
     ports:
-      - "8006:8006" # Wird für die ersteinrichtung ebnötigt http://<hostip>:8006
+      - "8006:8006" # Wird für die ersteinrichtung benötigt http://<hostip>:8006
       - "$WIN_RDP_PORT:3389/tcp" # RDP-Port für externe Verbindungen geöffnet (tcp)
       - "$WIN_RDP_PORT:3389/udp" # Port UDP - für ?
     #security_opt:
@@ -63,5 +54,5 @@ networks:
 #     \/ \___/|_|\__,_|_| |_| |_|\___||___/
 
 volumes:
-  flarevm_data: # FlareVM Data
-    name: "flarevm_data"
+  win_storage: # FlareVM Data
+    name: "win_storage"
