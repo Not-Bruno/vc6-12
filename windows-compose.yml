@@ -8,20 +8,20 @@ services:
 #          __/ |                  
 #         |___/                   
 
-  # FlareVM - Malware Analyse
-  flarevm:
+  # Windows for Reversing
+  winville:
     image: "dockurr/windows"
-    container_name: "FlareVM"
+    container_name: "WinVille"
     environment:
-      - "VERSION=$FVM_VERSION"
-      - "DISK_SIZE=$FVM_DISK_SIZE"
-      - "USERNAME=$FVM_USERNAME"
-      - "PASSWORD=$FVM_USERPASSWORD"
-      - "LANGUAGE=$FVM_LANGUAGE"
-      - "REGION=$FVM_REGION"
-      - "KEYBOARD=$FVM_KEYBOARD"
+      - "VERSION=$WIN_VERSION"
+      - "DISK_SIZE=$WIN_DISK_SIZE"
+      - "USERNAME=$WIN_USERNAME"
+      - "PASSWORD=$WIN_USERPASSWORD"
+      - "LANGUAGE=$WIN_LANGUAGE"
+      - "REGION=$WIN_REGION"
+      - "KEYBOARD=$WIN_KEYBOARD"
     volumes:
-      - "/srv/mallab/flarevm_data:/storage" # Volume auf sicheren Speicherort auf dem Server abgelegt
+      - "win_storage:/storage" # Volume auf sicheren Speicherort auf dem Server abgelegt
     devices:
       - "/dev/kvm" # Entfernen, falls Hardware-Virtualisierung nicht benötigt wird
       - "/dev/net/tun"  # Zugriff auf TUN-Gerät für VPN oder andere Netzwerkoperationen
@@ -31,29 +31,12 @@ services:
     #stdin_open: true
     ports:
       - "8006:8006" # Wird für die ersteinrichtung ebnötigt http://<hostip>:8006
-      - "3389:3389/tcp" # RDP-Port für externe Verbindungen geöffnet (tcp)
-      - "3389:3389/udp" # Port UDP - für ?
+      - "$WIN_RDP_PORT:3389/tcp" # RDP-Port für externe Verbindungen geöffnet (tcp)
+      - "$WIN_RDP_PORT:3389/udp" # Port UDP - für ?
     #security_opt:
     #  - no-new-privileges:true # Verhindert Privilegien-Eskalation
     #stop_grace_period: 2m
-    networks:
-      laboratory:
-        ipv4_address: "$FVM_IP_ADDR" # Statische IP innerhalb des Malware-Lab-Netzwerks
-
-  # Remnux - Networkmonitor
-  remnux:
-    image: "remnux/remnux-distro:focal"
-    container_name: "Remnux"
-    restart: always
-    volumes:
-      - "/srv/mallab/remnux_data:/home/remnux/files"
-    tty: true
-    stdin_open: true
-    ports:
-      - "21546:22" # Portweiterleitung für SSH von außen
-    networks:
-      laboratory:
-        ipv4_address: "$RMN_IP_ADDR" # Statische IP innerhalb des Malware-Lab-Netzwerks
+    networks: ["laboratory"]
 
 #  _   _      _                      _        
 # | \ | |    | |                    | |       
@@ -63,19 +46,14 @@ services:
 # |_| \_|\___|\__| \_/\_/ \___/|_|  |_|\_\___/
 
 networks:
-  # Mallab Net
-  # NETINF
-  # 128.0.0.0/28
-  # 255.255.255.240 --> 128.0.0.1 to 128.0.0.14
-  laboratory:
-    driver: macvlan
-    driver_opts:
-      parent: ens6 # Netzwerkschnittstelle des Hosts
+  win_net: # 128.0.0.1/29 > 128.0.0.1 bis 128.0.0.6
+    name: "win_net"
+    driver: "bridge"
     ipam:
       config:
-        - subnet: "128.0.0.0/28"
+        - subnet: "128.0.0.0/29"
+          ip_range: "128.0.0.0/29"
           gateway: "128.0.0.1"
-          ip_range: "128.0.0.0/28"
 
 # __      __   _                           
 # \ \    / /  | |                          
